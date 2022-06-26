@@ -60,29 +60,47 @@ class Meteor:
                            shadowRadius)
 
 class Player:
-    global playerSprite
-    playerSprite = pygame.image.load("sprites/basic_front.png")
+    global faceNorth
+    faceNorth = pygame.image.load("sprites/basic_back.png")
+
+    global faceSouth
+    faceSouth = pygame.image.load("sprites/basic_front.png")
+
+    global faceWest
+    faceWest = pygame.image.load("sprites/basic_side_l.png")
+
+    global faceEast
+    faceEast = pygame.image.load("sprites/basic_side_r.png")
 
     def __init__(self):
         # starting position is in the center of the screen
         self.pos = ((SCREEN_WIDTH / 2) - (playerSpriteSize / 2), (SCREEN_HEIGHT / 2) - (playerSpriteSize / 2))
+        self.playerSprite = faceSouth
 
     def move(self):
         pos = list(self.pos)
 
         # vertical movement
+        # north
         if pygame.key.get_pressed()[K_w] and self.pos[1] > 0:
             pos[1] = pos[1] - 3
+            self.playerSprite = faceNorth
 
+        # south
         if pygame.key.get_pressed()[K_s] and self.pos[1] < SCREEN_HEIGHT - playerSpriteSize:
             pos[1] = pos[1] + 3
+            self.playerSprite = faceSouth
 
         # horizontal movement
+        # west
         if pygame.key.get_pressed()[K_a] and self.pos[0] > 0:
             pos[0] = pos[0] - 3
+            self.playerSprite = faceWest
 
+        # east
         if pygame.key.get_pressed()[K_d] and self.pos[0] < SCREEN_WIDTH - playerSpriteSize:
             pos[0] = pos[0] + 3
+            self.playerSprite = faceEast
 
         self.pos = tuple(pos)
 
@@ -113,7 +131,7 @@ def main():
         player.move()
 
         # turn this into a function
-        screen.blit(playerSprite, player.pos)
+        screen.blit(player.playerSprite, player.pos)
 
 
 main()
