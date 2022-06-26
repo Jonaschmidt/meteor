@@ -16,6 +16,9 @@ TICK_SPEED = 32
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
 
+pygame.display.set_caption("Meteor!")
+pygame.display.set_icon(pygame.image.load("sprites/meteor_icon.png"))
+
 # TODO: get these values from the file automatically as opposed to assigning it manually
 meteorSpriteSize = 32
 playerSpriteSize = 32
@@ -31,6 +34,8 @@ class Meteor:
     global meteorSprite
     meteorSprite = pygame.image.load("sprites/basic_front.png")
 
+    # the smaller this number, the faster the meteors fall
+    # TODO: make it such that a larger number means meteors fall faster
     global meteorSpeed
     meteorSpeed = 32
 
@@ -41,7 +46,8 @@ class Meteor:
     shadowRadius = meteorSpriteSize / 2
 
     def __init__(self):
-        self.pos = (random.randint(0, SCREEN_WIDTH), random.randint(0, SCREEN_HEIGHT))
+        # position is a random location within the window bounds
+        self.pos = (random.randint(0, SCREEN_WIDTH - meteorSpriteSize), random.randint(0, SCREEN_HEIGHT - meteorSpriteSize))
         self.hitbox = pygame.Rect(self.pos[0], self.pos[1], meteorSpriteSize, meteorSpriteSize)
         self.shadowCount = -1
 
@@ -73,7 +79,7 @@ class Player:
     faceEast = pygame.image.load("sprites/basic_side_r.png")
 
     def __init__(self):
-        # starting position is in the center of the screen
+        # player starting position is in the center of the screen
         self.pos = ((SCREEN_WIDTH / 2) - (playerSpriteSize / 2), (SCREEN_HEIGHT / 2) - (playerSpriteSize / 2))
         self.playerSprite = faceSouth
 
