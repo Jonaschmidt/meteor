@@ -1,0 +1,23 @@
+while handle_quit() and CONTINUE:
+
+    clock.tick(TICK_SPEED)
+
+    backdrop.display()
+
+    if meteor.fallen():
+        craterList.append(meteor)
+        meteor = new Meteor
+
+    meteor.shadowUpdate()
+
+    for i in craterList:
+        display i
+
+    runner.move()
+
+    runner.display()
+
+    if runner.checkCollision():
+        CONTINUE = false
+
+# display end-screen
