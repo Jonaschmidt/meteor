@@ -13,9 +13,9 @@ while handle_quit() and CONTINUE:
     for i in craterList:
         display i
 
-    runner.move()
+    player.move()
 
-    runner.display()
+    player.display()
 
     if runner.checkCollision():
         CONTINUE = false

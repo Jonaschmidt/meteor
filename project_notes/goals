@@ -1,5 +1,6 @@
 DEFINITE GOALS:
     KEEP CODE CLEAN AND READABLE
+        (document each function)
     track score
     end screen
     full sprites, backdrop
