@@ -1,8 +1,11 @@
 DEFINITE GOALS:
+    KEEP CODE CLEAN AND READABLE
     track score
     end screen
     full sprites, backdrop
     main menu
+    "licensing"
+    readme
 
 POSSIBLE GOALS:
     music
@@ -10,3 +13,4 @@ POSSIBLE GOALS:
     meteor crash visual effect
     bonus coins
     difficulty ramp-up as time goes on
+    full-screen mode
