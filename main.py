@@ -23,6 +23,7 @@ pygame.display.set_icon(pygame.image.load("sprites/meteor_icon.png"))
 meteorSpriteSize = 32
 playerSpriteSize = 32
 
+
 def handle_quit():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -32,7 +33,7 @@ def handle_quit():
 
 class Score:
     global numberSpriteSheet
-    numberSpriteSheet = pygame.image.load("sprites/numbers.png").convert()
+    numberSpriteSheet = pygame.image.load("sprites/numbers_sprite_sheet.png").convert()
 
     def __init__(self):
         self.val = 0
