@@ -7,11 +7,14 @@ while handle_quit() and CONTINUE:
     if meteor.fallen():
         craterList.append(meteor)
         meteor = new Meteor
+        score.val = score.val + 1
 
     meteor.shadowUpdate()
 
     for i in craterList:
         display i
+
+    score.display()
 
     player.move()
 

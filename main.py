@@ -7,11 +7,11 @@ import pygame
 from pygame.locals import *
 
 # TODO: find a good screen ratio
-SCREEN_WIDTH = 270
-SCREEN_HEIGHT = 270
+SCREEN_WIDTH = 320
+SCREEN_HEIGHT = 320
 
 # TODO: find a good tick speed
-TICK_SPEED = 32
+FPS = 32
 
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -30,6 +30,31 @@ def handle_quit():
     return True
 
 
+class Score:
+    global numberSpriteSheet
+    numberSpriteSheet = pygame.image.load("sprites/numbers.png").convert()
+
+    def __init__(self):
+        self.val = 0
+
+    def display(self):
+        scoreArr = []
+        divisor = 1
+
+        while int(self.val / divisor) != 0:
+            scoreArr.insert(0, int(self.val / divisor) % 10)
+            divisor = divisor * 10
+
+        # scoreArr is now a list containing each decimal of the score
+
+        x_pos_score_blit = 0
+
+        for i in scoreArr:
+            screen.blit(numberSpriteSheet, (x_pos_score_blit, 0), (10 * i, 0, 10, 10))
+
+            x_pos_score_blit = x_pos_score_blit + 10
+
+
 class Meteor:
     global meteorSprite
     meteorSprite = pygame.image.load("sprites/basic_front.png")
@@ -37,7 +62,11 @@ class Meteor:
     # the smaller this number, the faster the meteors fall
     # TODO: make it such that a larger number means meteors fall faster
     global meteorSpeed
-    meteorSpeed = 32
+    meteorSpeed = 64
+
+    # number of points scored when a meteor falls
+    global meteorPoints
+    meteorPoints = 50
 
     global craterList
     craterList = []
@@ -65,6 +94,11 @@ class Meteor:
                            (self.pos[0] + shadowRadius, self.pos[1] + shadowRadius),
                            shadowRadius)
 
+    ### for debugging purposes
+    def hitboxDebug(self):
+        pygame.draw.rect(screen, (0, 255, 0), self.hitbox)
+
+
 class Player:
     global faceNorth
     faceNorth = pygame.image.load("sprites/basic_back.png")
@@ -82,6 +116,10 @@ class Player:
         # player starting position is in the center of the screen
         self.pos = ((SCREEN_WIDTH / 2) - (playerSpriteSize / 2), (SCREEN_HEIGHT / 2) - (playerSpriteSize / 2))
         self.playerSprite = faceSouth
+        self.hitbox = pygame.Rect(self.pos[0], self.pos[1], playerSpriteSize, playerSpriteSize)
+
+    def checkCollision(self, meteor):
+        return pygame.Rect.colliderect(self.hitbox, meteor.hitbox)
 
     def move(self):
         pos = list(self.pos)
@@ -109,34 +147,47 @@ class Player:
             self.playerSprite = faceEast
 
         self.pos = tuple(pos)
+        self.hitbox = pygame.Rect(self.pos[0], self.pos[1], playerSpriteSize, playerSpriteSize)
+
+    ### for debugging purposes
+    def hitboxDebug(self):
+        pygame.draw.rect(screen, (255, 0, 255), self.hitbox)
 
 
 def main():
     pygame.init()
 
+    score = Score()
     meteor = Meteor()
     player = Player()
 
-    while handle_quit():
-        clock.tick(TICK_SPEED)
+    GAME_CONTINUE = True
+
+    while handle_quit() and GAME_CONTINUE:
+        clock.tick(FPS)
 
         # TODO: display backdrop here
         pygame.display.update()
         screen.fill((255, 255, 255))
 
         if meteor.hasFallen():
+            score.val = score.val + meteorPoints
             craterList.append(meteor)
             meteor = Meteor()
 
         meteor.shadowUpdate(screen)
 
         for c in craterList:
-            # turn this into a function
+            # TODO: turn this into a function?
             screen.blit(meteorSprite, c.pos)
+            if player.checkCollision(c):
+                 GAME_CONTINUE = False
+
+        score.display()
 
         player.move()
 
-        # turn this into a function
+        # TODO: turn this into a function?
         screen.blit(player.playerSprite, player.pos)
 
 
