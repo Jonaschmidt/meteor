@@ -1,6 +1,15 @@
+main_menu.display()
+
+while handle_quit() and not CONTINUE:
+
+    clock.tick(FPS)
+
+    main_menu.checkButton()
+
+
 while handle_quit() and CONTINUE:
 
-    clock.tick(TICK_SPEED)
+    clock.tick(FPS)
 
     backdrop.display()
 
@@ -23,4 +32,4 @@ while handle_quit() and CONTINUE:
     if runner.checkCollision():
         CONTINUE = false
 
-# display end-screen
+    # display end-screen
