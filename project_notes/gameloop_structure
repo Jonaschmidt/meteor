@@ -1,13 +1,16 @@
-main_menu.display()
+mainMenu.display()
 
-while handle_quit() and not CONTINUE:
+while not QUIT and not PLAY:
+    handle_quit()
 
     clock.tick(FPS)
 
-    main_menu.checkButton()
+    mainMenu.display()
+    mainMenu.checkButtons()
 
 
-while handle_quit() and CONTINUE:
+while not QUIT and PLAY:
+    handle_quit()
 
     clock.tick(FPS)
 
@@ -23,13 +26,25 @@ while handle_quit() and CONTINUE:
     for i in craterList:
         display i
 
+        if player.checkCollision(i):
+            PLAY = False
+
+            craterList.clear()
+
+            score.val = 0
+            meteor = Meteor()
+            player = Player()
+
+            while not QUIT and not PLAY:
+                handle_quit()
+
+                clock.tick(FPS)
+
+                restartMenu.display()
+                restartMenu.checkButtons()
+
     score.display()
 
     player.move()
 
     player.display()
-
-    if runner.checkCollision():
-        CONTINUE = false
-
-    # display end-screen

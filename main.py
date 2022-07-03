@@ -10,7 +10,7 @@ from pygame.locals import *
 SCREEN_WIDTH = 320
 SCREEN_HEIGHT = 320
 
-# TODO: find a good tick speed
+# TODO: find a good FPS
 FPS = 32
 
 clock = pygame.time.Clock()
@@ -19,12 +19,11 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
 pygame.display.set_caption("Meteor!")
 pygame.display.set_icon(pygame.image.load("sprites/meteor_icon.png"))
 
-# TODO: get these values from the file automatically as opposed to assigning it manually
+# TODO: get these values from the file automatically as opposed to assigning it manually?
 meteorSpriteSize = 32
 playerSpriteSize = 32
 
 menuButtonWidth, menuButtonHeight = 80, 40
-buttonMargins = 15
 
 # game states
 PLAY = False
@@ -48,13 +47,21 @@ class MainMenu:
     quit_button_image = pygame.image.load("sprites/quit_button.png").convert()
 
     # TODO: create a new menu background and update display function
+    # TODO: force menu background image to tessellate if window resolution larger than image size?
     global menu_BG
     menu_BG = pygame.image.load("backgrounds/temp_grass_BG.png").convert()
 
     def __init__(self):
-        self.playButtonLocation = pygame.Rect((buttonMargins,
+        self.buttonMargins = 15
+
+        # "play" button positioned on left side of window
+        # horizontal position is determined by buttonMargins, vertical position is mid-screen
+        self.playButtonLocation = pygame.Rect((self.buttonMargins,
                                                (SCREEN_HEIGHT // 2) - (menuButtonHeight // 2)), (menuButtonWidth, menuButtonHeight))
-        self.quitButtonLocation = pygame.Rect((SCREEN_WIDTH - menuButtonWidth - buttonMargins, (SCREEN_HEIGHT // 2) - (menuButtonHeight // 2)),
+
+        # "quit" button positioned on right side of window
+        # horizontal position is determined by buttonMargins, vertical position is mid-screen
+        self.quitButtonLocation = pygame.Rect((SCREEN_WIDTH - menuButtonWidth - self.buttonMargins, (SCREEN_HEIGHT // 2) - (menuButtonHeight // 2)),
                                               (menuButtonWidth, menuButtonHeight))
 
     def display(self):
@@ -63,6 +70,7 @@ class MainMenu:
         screen.blit(play_button_image, self.playButtonLocation)
         screen.blit(quit_button_image, self.quitButtonLocation)
 
+    # TODO: visual indicator when mouse over button
     def checkButtons(self):
         global PLAY
         global QUIT
@@ -95,8 +103,8 @@ class Score:
     global numberSpriteSheet
     numberSpriteSheet = pygame.image.load("sprites/numbers_sprite_sheet.png").convert()
 
-    def __init__(self):
-        self.val = 0
+    def __init__(self, initial_score):
+        self.val = initial_score
 
     def display(self):
         scoreArr = []
@@ -123,7 +131,7 @@ class Meteor:
     # the smaller this number, the faster the meteors fall
     # TODO: make it such that a larger number means meteors fall faster
     global meteorSpeed
-    meteorSpeed = 64
+    meteorSpeed = 16
 
     # number of points scored when a meteor falls
     global meteorPoints
@@ -221,11 +229,9 @@ def main():
 
     mainMenu = MainMenu()
 
-    score = Score()
+    score = Score(initial_score=0)
     meteor = Meteor()
     player = Player()
-
-    GAME_CONTINUE = True
 
     while not QUIT and not PLAY:
         handle_quit()
@@ -258,7 +264,10 @@ def main():
             # TODO: turn this into a function?
             screen.blit(meteorSprite, c.pos)
             if player.checkCollision(c):
-                 GAME_CONTINUE = False
+                # TODO: trigger a "death"/continue/score screen here (within while loop until game quit or play again)
+
+                ### for debugging purposes
+                print("collision!")
 
         score.display()
 

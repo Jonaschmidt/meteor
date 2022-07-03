@@ -1,7 +1,7 @@
 DEFINITE GOALS:
     KEEP CODE CLEAN AND READABLE
         (document each function)
-    end screen
+    continue/"death" screen
     full sprites, backdrop
     "licensing"
     readme
@@ -17,3 +17,4 @@ POSSIBLE GOALS:
     multiple lives
     convert to sprite sheets
     craters fade over time
+    high score saver
