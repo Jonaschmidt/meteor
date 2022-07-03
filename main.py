@@ -23,12 +23,76 @@ pygame.display.set_icon(pygame.image.load("sprites/meteor_icon.png"))
 meteorSpriteSize = 32
 playerSpriteSize = 32
 
+menuButtonWidth, menuButtonHeight = 80, 40
+buttonMargins = 15
 
+global PLAY
+PLAY = False
+
+global QUIT
+QUIT = False
+
+
+# TODO: instead of returning false, change QUIT to true and refactor the rest of the code
 def handle_quit():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return False
     return True
+
+
+class MainMenu:
+    global play_button_image
+    play_button_image = pygame.image.load("sprites/play_button.png").convert()
+
+    global quit_button_image
+    quit_button_image = pygame.image.load("sprites/quit_button.png").convert()
+
+    # TODO: create a new menu background and update display function
+    global menu_BG
+    menu_BG = pygame.image.load("backgrounds/temp_grass_BG.png").convert()
+
+    def __init__(self):
+        # TODO: "play" and "quit" variables should be global and in higher scope
+        # starts the game when this is true:
+        self.play = False
+        # quits the game when this is true:
+        self.quit = False
+
+        self.playButtonLocation = pygame.Rect((buttonMargins,
+                                               (SCREEN_HEIGHT // 2) - (menuButtonHeight // 2)), (menuButtonWidth, menuButtonHeight))
+        self.quitButtonLocation = pygame.Rect((SCREEN_WIDTH - menuButtonWidth - buttonMargins, (SCREEN_HEIGHT // 2) - (menuButtonHeight // 2)),
+                                              (menuButtonWidth, menuButtonHeight))
+
+    def display(self):
+        screen.blit(menu_BG, (0, 0))
+
+        screen.blit(play_button_image, self.playButtonLocation)
+        screen.blit(quit_button_image, self.quitButtonLocation)
+
+    def checkButtons(self):
+        # only check if LMB is pressed
+        if not pygame.mouse.get_pressed()[0]:
+            return
+
+        if self.playButtonLocation.collidepoint(pygame.mouse.get_pos()):
+            self.play = True
+
+        elif self.quitButtonLocation.collidepoint(pygame.mouse.get_pos()):
+            self.quit = True
+
+
+class Background:
+    global temp_grass_BG
+    temp_grass_BG = pygame.image.load("backgrounds/temp_grass_BG.png").convert()
+
+    global grass_tile_0
+    grass0 = pygame.image.load("sprites/grass_tile_0.png")
+
+    def __init__(self):
+        self.BGarray = []
+
+    # TODO: define a function to generate a background randomly using grass tiles to use as a background
 
 
 class Score:
@@ -58,7 +122,7 @@ class Score:
 
 class Meteor:
     global meteorSprite
-    meteorSprite = pygame.image.load("sprites/basic_front.png")
+    meteorSprite = pygame.image.load("sprites/basic_front.png").convert_alpha()
 
     # the smaller this number, the faster the meteors fall
     # TODO: make it such that a larger number means meteors fall faster
@@ -102,16 +166,16 @@ class Meteor:
 
 class Player:
     global faceNorth
-    faceNorth = pygame.image.load("sprites/basic_back.png")
+    faceNorth = pygame.image.load("sprites/basic_back.png").convert_alpha()
 
     global faceSouth
-    faceSouth = pygame.image.load("sprites/basic_front.png")
+    faceSouth = pygame.image.load("sprites/basic_front.png").convert_alpha()
 
     global faceWest
-    faceWest = pygame.image.load("sprites/basic_side_l.png")
+    faceWest = pygame.image.load("sprites/basic_side_l.png").convert_alpha()
 
     global faceEast
-    faceEast = pygame.image.load("sprites/basic_side_r.png")
+    faceEast = pygame.image.load("sprites/basic_side_r.png").convert_alpha()
 
     def __init__(self):
         # player starting position is in the center of the screen
@@ -158,13 +222,24 @@ class Player:
 def main():
     pygame.init()
 
+    mainMenu = MainMenu()
+
     score = Score()
     meteor = Meteor()
     player = Player()
 
     GAME_CONTINUE = True
 
-    while handle_quit() and GAME_CONTINUE:
+    while handle_quit() and not mainMenu.play and not mainMenu.quit:
+        clock.tick(FPS)
+
+        pygame.display.update()
+
+        mainMenu.display()
+
+        mainMenu.checkButtons()
+
+    while handle_quit() and GAME_CONTINUE and not mainMenu.quit:
         clock.tick(FPS)
 
         # TODO: display backdrop here
