@@ -26,18 +26,17 @@ playerSpriteSize = 32
 menuButtonWidth, menuButtonHeight = 80, 40
 buttonMargins = 15
 
-global PLAY
+# game states
 PLAY = False
-
-global QUIT
 QUIT = False
 
 
-# TODO: instead of returning false, change QUIT to true and refactor the rest of the code
 def handle_quit():
+    global QUIT
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            return False
+            QUIT = True
     return True
 
 
@@ -53,12 +52,6 @@ class MainMenu:
     menu_BG = pygame.image.load("backgrounds/temp_grass_BG.png").convert()
 
     def __init__(self):
-        # TODO: "play" and "quit" variables should be global and in higher scope
-        # starts the game when this is true:
-        self.play = False
-        # quits the game when this is true:
-        self.quit = False
-
         self.playButtonLocation = pygame.Rect((buttonMargins,
                                                (SCREEN_HEIGHT // 2) - (menuButtonHeight // 2)), (menuButtonWidth, menuButtonHeight))
         self.quitButtonLocation = pygame.Rect((SCREEN_WIDTH - menuButtonWidth - buttonMargins, (SCREEN_HEIGHT // 2) - (menuButtonHeight // 2)),
@@ -71,15 +64,18 @@ class MainMenu:
         screen.blit(quit_button_image, self.quitButtonLocation)
 
     def checkButtons(self):
+        global PLAY
+        global QUIT
+
         # only check if LMB is pressed
         if not pygame.mouse.get_pressed()[0]:
             return
 
         if self.playButtonLocation.collidepoint(pygame.mouse.get_pos()):
-            self.play = True
+            PLAY = True
 
         elif self.quitButtonLocation.collidepoint(pygame.mouse.get_pos()):
-            self.quit = True
+            QUIT = True
 
 
 class Background:
@@ -220,6 +216,7 @@ class Player:
 
 
 def main():
+
     pygame.init()
 
     mainMenu = MainMenu()
@@ -230,7 +227,9 @@ def main():
 
     GAME_CONTINUE = True
 
-    while handle_quit() and not mainMenu.play and not mainMenu.quit:
+    while not QUIT and not PLAY:
+        handle_quit()
+
         clock.tick(FPS)
 
         pygame.display.update()
@@ -239,7 +238,9 @@ def main():
 
         mainMenu.checkButtons()
 
-    while handle_quit() and GAME_CONTINUE and not mainMenu.quit:
+    while not QUIT and PLAY:
+        handle_quit()
+
         clock.tick(FPS)
 
         # TODO: display backdrop here
