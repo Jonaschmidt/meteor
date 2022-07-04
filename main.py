@@ -92,7 +92,7 @@ class MainMenu:
 class RetryMenu:
     # TODO: create new sprite for this
     global retry_button_image
-    retry_button_image = pygame.image.load("sprites/play_button.png").convert()
+    retry_button_image = pygame.image.load("sprites/retry_button.png").convert()
 
     global quit_button_image
     quit_button_image = pygame.image.load("sprites/quit_button.png").convert()
@@ -322,9 +322,6 @@ def main():
                 screen.blit(meteorSprite, c.pos)
                 if player.checkCollision(c):
                     PLAY = False
-
-                    ### for debugging purposes
-                    print("collision!")
 
             score.display()
 
