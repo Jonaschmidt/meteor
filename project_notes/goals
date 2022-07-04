@@ -1,11 +1,13 @@
 DEFINITE GOALS:
     KEEP CODE CLEAN AND READABLE
         (document each function)
-    continue/"death" screen
+    continue/"death" screen (WIP)
     full sprites, backdrop
     "licensing"
     readme
-    refactor BGs and BG tiles into new directory
+    create class menu; merge retry and main into this class somehow
+    redefine global variables if extraneous
+    keep variables in order (e.g. PLAY and QUIT)
 
 POSSIBLE GOALS:
     music
@@ -18,3 +20,4 @@ POSSIBLE GOALS:
     convert to sprite sheets
     craters fade over time
     high score saver
+    main menu mouse-follower

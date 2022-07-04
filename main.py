@@ -3,8 +3,11 @@ created by Jonas Schmidt on 6/26/2022
 '''
 
 import random
+
 import pygame
 from pygame.locals import *
+
+import sys
 
 # TODO: find a good screen ratio
 SCREEN_WIDTH = 320
@@ -48,8 +51,8 @@ class MainMenu:
 
     # TODO: create a new menu background and update display function
     # TODO: force menu background image to tessellate if window resolution larger than image size?
-    global menu_BG
-    menu_BG = pygame.image.load("backgrounds/temp_grass_BG.png").convert()
+    global main_menu_BG
+    main_menu_BG = pygame.image.load("backgrounds/temp_grass_BG.png").convert()
 
     def __init__(self):
         self.buttonMargins = 15
@@ -65,7 +68,7 @@ class MainMenu:
                                               (menuButtonWidth, menuButtonHeight))
 
     def display(self):
-        screen.blit(menu_BG, (0, 0))
+        screen.blit(main_menu_BG, (0, 0))
 
         screen.blit(play_button_image, self.playButtonLocation)
         screen.blit(quit_button_image, self.quitButtonLocation)
@@ -86,12 +89,60 @@ class MainMenu:
             QUIT = True
 
 
+class RetryMenu:
+    # TODO: create new sprite for this
+    global retry_button_image
+    retry_button_image = pygame.image.load("sprites/play_button.png").convert()
+
+    global quit_button_image
+    quit_button_image = pygame.image.load("sprites/quit_button.png").convert()
+
+    # TODO: create a new menu background and update display function
+    # TODO: force menu background image to tessellate if window resolution larger than image size?
+    global retry_menu_BG
+    retry_menu_BG = pygame.image.load("backgrounds/temp_retry_menu_BG.png").convert()
+
+    def __init__(self):
+        self.buttonMargins = 15
+
+        # "play" button positioned on left side of window
+        # horizontal position is determined by buttonMargins, vertical position is mid-screen
+        self.retryButtonLocation = pygame.Rect((self.buttonMargins,
+                                               (SCREEN_HEIGHT // 2) - (menuButtonHeight // 2)), (menuButtonWidth, menuButtonHeight))
+
+        # "quit" button positioned on right side of window
+        # horizontal position is determined by buttonMargins, vertical position is mid-screen
+        self.quitButtonLocation = pygame.Rect((SCREEN_WIDTH - menuButtonWidth - self.buttonMargins, (SCREEN_HEIGHT // 2) - (menuButtonHeight // 2)),
+                                              (menuButtonWidth, menuButtonHeight))
+
+    def display(self):
+        screen.blit(retry_menu_BG, (0, 0))
+
+        screen.blit(retry_button_image, self.retryButtonLocation)
+        screen.blit(quit_button_image, self.quitButtonLocation)
+
+    # TODO: visual indicator when mouse over button
+    def checkButtons(self):
+        global PLAY
+        global QUIT
+
+        # only check if LMB is pressed
+        if not pygame.mouse.get_pressed()[0]:
+            return
+
+        if self.retryButtonLocation.collidepoint(pygame.mouse.get_pos()):
+            PLAY = True
+
+        elif self.quitButtonLocation.collidepoint(pygame.mouse.get_pos()):
+            QUIT = True
+
+
 class Background:
     global temp_grass_BG
     temp_grass_BG = pygame.image.load("backgrounds/temp_grass_BG.png").convert()
 
     global grass_tile_0
-    grass0 = pygame.image.load("sprites/grass_tile_0.png")
+    grass0 = pygame.image.load("sprites/tiles/grass_tile_0.png")
 
     def __init__(self):
         self.BGarray = []
@@ -224,14 +275,13 @@ class Player:
 
 
 def main():
+    global PLAY
+    global QUIT
 
     pygame.init()
 
     mainMenu = MainMenu()
-
-    score = Score(initial_score=0)
-    meteor = Meteor()
-    player = Player()
+    retryMenu = RetryMenu()
 
     while not QUIT and not PLAY:
         handle_quit()
@@ -244,37 +294,58 @@ def main():
 
         mainMenu.checkButtons()
 
-    while not QUIT and PLAY:
-        handle_quit()
+    while not QUIT:
+        score = Score(initial_score=0)
+        meteor = Meteor()
+        player = Player()
 
-        clock.tick(FPS)
+        craterList.clear()
 
-        # TODO: display backdrop here
-        pygame.display.update()
-        screen.fill((255, 255, 255))
+        while not QUIT and PLAY:
+            handle_quit()
 
-        if meteor.hasFallen():
-            score.val = score.val + meteorPoints
-            craterList.append(meteor)
-            meteor = Meteor()
+            clock.tick(FPS)
 
-        meteor.shadowUpdate(screen)
+            # TODO: display backdrop here
+            pygame.display.update()
+            screen.fill((255, 255, 255))
 
-        for c in craterList:
+            if meteor.hasFallen():
+                score.val = score.val + meteorPoints
+                craterList.append(meteor)
+                meteor = Meteor()
+
+            meteor.shadowUpdate(screen)
+
+            for c in craterList:
+                # TODO: turn this into a function?
+                screen.blit(meteorSprite, c.pos)
+                if player.checkCollision(c):
+                    PLAY = False
+
+                    ### for debugging purposes
+                    print("collision!")
+
+            score.display()
+
+            player.move()
+
             # TODO: turn this into a function?
-            screen.blit(meteorSprite, c.pos)
-            if player.checkCollision(c):
-                # TODO: trigger a "death"/continue/score screen here (within while loop until game quit or play again)
+            screen.blit(player.playerSprite, player.pos)
 
-                ### for debugging purposes
-                print("collision!")
+        while not QUIT and not PLAY:
+            handle_quit()
 
-        score.display()
+            clock.tick(FPS)
 
-        player.move()
+            pygame.display.update()
 
-        # TODO: turn this into a function?
-        screen.blit(player.playerSprite, player.pos)
+            retryMenu.display()
+
+            retryMenu.checkButtons()
+
+    pygame.quit()
+    sys.exit()
 
 
 main()

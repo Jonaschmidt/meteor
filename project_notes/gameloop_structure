@@ -9,42 +9,48 @@ while not QUIT and not PLAY:
     mainMenu.checkButtons()
 
 
-while not QUIT and PLAY:
-    handle_quit()
+while not QUIT:
+    while PLAY and not QUIT:
+        handle_quit()
 
-    clock.tick(FPS)
+        clock.tick(FPS)
 
-    backdrop.display()
+        backdrop.display()
 
-    if meteor.fallen():
-        craterList.append(meteor)
-        meteor = new Meteor
-        score.val = score.val + 1
+        if meteor.fallen():
+            craterList.append(meteor)
+            meteor = new Meteor
+            score.val = score.val + 1
 
-    meteor.shadowUpdate()
+        meteor.shadowUpdate()
 
-    for i in craterList:
-        display i
+        for i in craterList:
+            display i
 
-        if player.checkCollision(i):
-            PLAY = False
+            if player.checkCollision(i):
+                PLAY = False
 
-            craterList.clear()
+                craterList.clear()
 
-            score.val = 0
-            meteor = Meteor()
-            player = Player()
+                score.val = 0
+                meteor = Meteor()
+                player = Player()
 
-            while not QUIT and not PLAY:
-                handle_quit()
+                PLAY = False
 
-                clock.tick(FPS)
 
-                restartMenu.display()
-                restartMenu.checkButtons()
+        score.display()
 
-    score.display()
+        player.move()
 
-    player.move()
+        player.display()
 
-    player.display()
+    while not PLAY and not QUIT:
+        handle_quit()
+
+        clock.tick(FPS)
+
+        retryMenu.display
+
+        retryMenu.checkButtons()
+
