@@ -2,7 +2,7 @@
 created by Jonas Schmidt on 6/26/2022
 '''
 
-import background
+from background import Background
 import random
 import pygame
 from pygame.locals import *
@@ -24,6 +24,7 @@ pygame.display.set_icon(pygame.image.load("sprites/meteor_icon.png"))
 # TODO: get these values from the file automatically as opposed to assigning it manually?
 meteorSpriteSize = 32
 playerSpriteSize = 32
+tileSize = 32
 
 menuButtonWidth, menuButtonHeight = 80, 40
 
@@ -51,7 +52,7 @@ class MainMenu:
     # TODO: create a new menu background and update display function
     # TODO: force menu background image to tessellate if window resolution larger than image size?
     global main_menu_BG
-    main_menu_BG = pygame.image.load("backgrounds/temp_grass_BG.png").convert()
+    main_menu_BG = pygame.image.load("backgrounds/temp_main_menu_BG.png").convert()
 
     def __init__(self):
         self.buttonMargins = 15
@@ -239,7 +240,9 @@ class Player:
     global faceEast
     faceEast = pygame.image.load("sprites/basic_side_r.png").convert_alpha()
 
-    def __init__(self):
+    def __init__(self, speed=3):
+        self.speed = speed
+
         # player starting position is in the center of the screen
         self.pos = ((SCREEN_WIDTH / 2) - (playerSpriteSize / 2), (SCREEN_HEIGHT / 2) - (playerSpriteSize / 2))
         self.playerSprite = faceSouth
@@ -254,23 +257,23 @@ class Player:
         # vertical movement
         # north
         if pygame.key.get_pressed()[K_w] and self.pos[1] > 0:
-            pos[1] = pos[1] - 3
+            pos[1] = pos[1] - self.speed
             self.playerSprite = faceNorth
 
         # south
         if pygame.key.get_pressed()[K_s] and self.pos[1] < SCREEN_HEIGHT - playerSpriteSize:
-            pos[1] = pos[1] + 3
+            pos[1] = pos[1] + self.speed
             self.playerSprite = faceSouth
 
         # horizontal movement
         # west
         if pygame.key.get_pressed()[K_a] and self.pos[0] > 0:
-            pos[0] = pos[0] - 3
+            pos[0] = pos[0] - self.speed
             self.playerSprite = faceWest
 
         # east
         if pygame.key.get_pressed()[K_d] and self.pos[0] < SCREEN_WIDTH - playerSpriteSize:
-            pos[0] = pos[0] + 3
+            pos[0] = pos[0] + self.speed
             self.playerSprite = faceEast
 
         self.pos = tuple(pos)
@@ -340,6 +343,9 @@ def main():
 
         mainMenu.checkButtons()
 
+    gameBG = Background((SCREEN_WIDTH, SCREEN_HEIGHT), tileSize, "sprites/tiles", "backgrounds", "grass")
+    gameBG.randomGeneration()
+
     while not QUIT:
         score = Score(initial_score=0)
         meteor = Meteor()
@@ -349,9 +355,9 @@ def main():
 
             clock.tick(FPS)
 
-            # TODO: display backdrop here
             pygame.display.update()
-            screen.fill((255, 255, 255))
+
+            gameBG.display(screen)
 
             if meteor.hasFallen():
                 score.val = score.val + meteorPoints
