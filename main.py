@@ -2,11 +2,10 @@
 created by Jonas Schmidt on 6/26/2022
 '''
 
+import background
 import random
-
 import pygame
 from pygame.locals import *
-
 import sys
 
 # TODO: find a good screen ratio
@@ -115,8 +114,28 @@ class RetryMenu:
         self.quitButtonLocation = pygame.Rect((SCREEN_WIDTH - menuButtonWidth - self.buttonMargins, (SCREEN_HEIGHT // 2) - (menuButtonHeight // 2)),
                                               (menuButtonWidth, menuButtonHeight))
 
-    def display(self):
+    def display(self, finalScore):
         screen.blit(retry_menu_BG, (0, 0))
+
+        scoreArr = []
+        divisor = 1
+
+        # TODO: instead, use finalScore.display() with the optional argument once implemented...
+        while int(finalScore.val / divisor) != 0:
+            scoreArr.insert(0, int(finalScore.val / divisor) % 10)
+            divisor = divisor * 10
+
+        # scoreArr is now a list containing each decimal of the score
+
+        # TODO: perhaps declare the size of the number sprite sheet and use that here and elsewhere
+        x_pos_score_blit = (SCREEN_WIDTH / 2) - len(scoreArr) * 5
+        y_pos_score_blit = (SCREEN_HEIGHT / 2) - 5
+
+        for i in scoreArr:
+            screen.blit(numberSpriteSheet, (x_pos_score_blit, y_pos_score_blit), (10 * i, 0, 10, 10))
+
+            x_pos_score_blit = x_pos_score_blit + 10
+        # ...
 
         screen.blit(retry_button_image, self.retryButtonLocation)
         screen.blit(quit_button_image, self.quitButtonLocation)
@@ -137,19 +156,6 @@ class RetryMenu:
             QUIT = True
 
 
-class Background:
-    global temp_grass_BG
-    temp_grass_BG = pygame.image.load("backgrounds/temp_grass_BG.png").convert()
-
-    global grass_tile_0
-    grass0 = pygame.image.load("sprites/tiles/grass_tile_0.png")
-
-    def __init__(self):
-        self.BGarray = []
-
-    # TODO: define a function to generate a background randomly using grass tiles to use as a background
-
-
 class Score:
     global numberSpriteSheet
     numberSpriteSheet = pygame.image.load("sprites/numbers_sprite_sheet.png").convert()
@@ -157,6 +163,7 @@ class Score:
     def __init__(self, initial_score):
         self.val = initial_score
 
+    # TODO: give this an optional argument: "position"
     def display(self):
         scoreArr = []
         divisor = 1
@@ -177,7 +184,7 @@ class Score:
 
 class Meteor:
     global meteorSprite
-    meteorSprite = pygame.image.load("sprites/basic_front.png").convert_alpha()
+    meteorSprite = pygame.image.load("sprites/crater.png").convert_alpha()
 
     # the smaller this number, the faster the meteors fall
     # TODO: make it such that a larger number means meteors fall faster
@@ -186,7 +193,7 @@ class Meteor:
 
     # number of points scored when a meteor falls
     global meteorPoints
-    meteorPoints = 50
+    meteorPoints = 10
 
     global craterList
     craterList = []
@@ -269,6 +276,40 @@ class Player:
         self.pos = tuple(pos)
         self.hitbox = pygame.Rect(self.pos[0], self.pos[1], playerSpriteSize, playerSpriteSize)
 
+    def changeFace(self, direction):
+        if direction == "north":
+            self.playerSprite = faceNorth
+
+        elif direction == "east":
+            self.playerSprite = faceEast
+
+        elif direction == "south":
+            self.playerSprite = faceSouth
+
+        elif direction == "west":
+            self.playerSprite = faceWest
+
+    def faceMouse(self):
+        position = pygame.mouse.get_pos()
+
+        x = position[0] - (self.pos[0])
+        y = - (position[1] - (self.pos[1]))
+
+        if y > x and y > (-x):
+            self.playerSprite = faceNorth
+
+        elif x > y > (-x):
+            self.playerSprite = faceEast
+
+        elif y < x and y < (-x):
+            self.playerSprite = faceSouth
+
+        elif x < y < (-x):
+            self.playerSprite = faceWest
+
+    def display(self):
+        screen.blit(self.playerSprite, self.pos)
+
     ### for debugging purposes
     def hitboxDebug(self):
         pygame.draw.rect(screen, (255, 0, 255), self.hitbox)
@@ -283,6 +324,8 @@ def main():
     mainMenu = MainMenu()
     retryMenu = RetryMenu()
 
+    player = Player()
+
     while not QUIT and not PLAY:
         handle_quit()
 
@@ -292,14 +335,14 @@ def main():
 
         mainMenu.display()
 
+        player.faceMouse()
+        player.display()
+
         mainMenu.checkButtons()
 
     while not QUIT:
         score = Score(initial_score=0)
         meteor = Meteor()
-        player = Player()
-
-        craterList.clear()
 
         while not QUIT and PLAY:
             handle_quit()
@@ -323,12 +366,13 @@ def main():
                 if player.checkCollision(c):
                     PLAY = False
 
+            score.val = score.val + 1
+
             score.display()
 
             player.move()
 
-            # TODO: turn this into a function?
-            screen.blit(player.playerSprite, player.pos)
+            player.display()
 
         while not QUIT and not PLAY:
             handle_quit()
@@ -337,12 +381,15 @@ def main():
 
             pygame.display.update()
 
-            retryMenu.display()
+            retryMenu.display(finalScore=score)
 
             retryMenu.checkButtons()
 
-    pygame.quit()
-    sys.exit()
+        player = Player()
+        craterList.clear()
 
 
 main()
+
+pygame.quit()
+sys.exit()

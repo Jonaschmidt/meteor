@@ -1,13 +1,15 @@
 DEFINITE GOALS:
     KEEP CODE CLEAN AND READABLE
         (document each function)
-    continue/"death" screen (WIP)
+        fix most "grammatical" errors
+    continue/"death" screen (WIP) that displays score
     full sprites, backdrop
     "licensing"
     readme
     create class menu; merge retry and main into this class somehow
     redefine global variables if extraneous
     keep variables in order (e.g. PLAY and QUIT)
+    put imports in alphabetical order
 
 POSSIBLE GOALS:
     music
