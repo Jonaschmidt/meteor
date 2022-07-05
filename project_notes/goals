@@ -2,19 +2,21 @@ DEFINITE GOALS:
     KEEP CODE CLEAN AND READABLE
         (document each function)
         fix most "grammatical" errors
-    continue/"death" screen (WIP) that displays score
-    full sprites, backdrop
+        clean up the background.py module
+    continue/"death" screen that displays score (WIP)
+    full sprites, backdrops
     "licensing"
     readme
     create class menu; merge retry and main into this class somehow
     redefine global variables if extraneous
-    keep variables in order (e.g. PLAY and QUIT)
+    keep certain variables in order (e.g. PLAY and QUIT)
     put imports in alphabetical order
+    meteor impact effect
 
 POSSIBLE GOALS:
+    settings menu
     music
     sound effects
-    meteor crash visual effect
     bonus coins
     difficulty ramp-up as time goes on
     full-screen mode
